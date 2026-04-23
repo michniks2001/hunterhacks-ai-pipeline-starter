@@ -1,0 +1,51 @@
+{
+  "coney island": {
+    "name": "Coney Island",
+    "borough": "Brooklyn",
+    "landmarks": [
+      "boardwalk",
+      "beach",
+      "Luna Park",
+      "Cyclone roller coaster"
+    ],
+    "vibe": "playful, nostalgic, loud, beachside, colorful, summer energy",
+    "designHints": [
+      "retro amusement park",
+      "ocean colors",
+      "bold signage",
+      "warm sunset tones"
+    ]
+  },
+  "flushing": {
+    "name": "Flushing",
+    "borough": "Queens",
+    "landmarks": [
+      "Main Street",
+      "Flushing Meadows Corona Park",
+      "food courts"
+    ],
+    "vibe": "dense, energetic, multicultural, food-focused, fast-paced",
+    "designHints": [
+      "bright storefronts",
+      "market energy",
+      "red and gold accents",
+      "urban density"
+    ]
+  },
+  "williamsburg": {
+    "name": "Williamsburg",
+    "borough": "Brooklyn",
+    "landmarks": [
+      "waterfront",
+      "Domino Park",
+      "Bedford Avenue"
+    ],
+    "vibe": "creative, trendy, industrial, artsy, nightlife-heavy",
+    "designHints": [
+      "warehouse textures",
+      "minimal typography",
+      "muted colors",
+      "music and art culture"
+    ]
+  }
+}

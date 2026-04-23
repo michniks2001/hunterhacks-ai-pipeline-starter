@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ experience.neighborhoodName }} · {{ experience.borough }}</title>
+  <style>
+    :root {
+      --bg: {{ experience.colorPalette.background }};
+      --fg: {{ experience.colorPalette.text }};
+      --primary: {{ experience.colorPalette.primary }};
+      --secondary: {{ experience.colorPalette.secondary }};
+      --accent: {{ experience.colorPalette.accent }};
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.65;
+    }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .eyebrow { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.85; }
+    h1 { font-size: clamp(2rem, 4.5vw, 3rem); font-weight: 800; letter-spacing: -0.03em; margin: 0.5rem 0 0.75rem; line-height: 1.1; }
+    .lede { font-size: 1.15rem; max-width: 42rem; opacity: 0.92; margin: 0; }
+    .byline { margin-top: 1rem; font-size: 0.95rem; opacity: 0.8; }
+    .tag { display: inline-block; margin-top: 1rem; font-size: 0.75rem; padding: 0.25rem 0.65rem; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); color: var(--accent); }
+    section { margin-top: 2.75rem; }
+    h2 { font-size: 1.2rem; margin: 0 0 1rem; color: var(--primary); }
+    .prose p { margin: 0 0 1rem; }
+    .grid { display: grid; gap: 1rem; }
+    @media (min-width: 720px) { .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .card { border: 1px solid color-mix(in srgb, var(--secondary) 55%, transparent); border-radius: 0.85rem; padding: 1.25rem 1.35rem; background: color-mix(in srgb, var(--fg) 5%, var(--bg)); }
+    .muted { font-size: 0.85rem; opacity: 0.75; margin-top: 0.75rem; }
+    .quote { font-size: 1.35rem; font-weight: 600; line-height: 1.35; border-left: 4px solid var(--accent); padding-left: 1rem; margin: 0; }
+    .timeline { border-left: 2px solid color-mix(in srgb, var(--secondary) 70%, transparent); padding-left: 1rem; margin: 0; }
+    .timeline dt { font-weight: 600; margin: 0.75rem 0 0.15rem; }
+    .timeline dd { margin: 0 0 0.5rem; opacity: 0.9; }
+    ul.insights { margin: 0; padding-left: 1.1rem; }
+    ul.insights li { margin: 0.4rem 0; }
+    .cta { border-radius: 0.85rem; padding: 1.5rem 1.35rem; background: color-mix(in srgb, var(--primary) 14%, var(--bg)); border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent); }
+    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid color-mix(in srgb, var(--secondary) 55%, transparent); font-size: 0.82rem; opacity: 0.75; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">{{ experience.borough }} · {{ experience.visualStyle }}</div>
+      <h1>{{ experience.headline }}</h1>
+      <p class="lede">{{ experience.subheadline }}</p>
+      <p class="byline">{{ experience.byline }}{% if experience.readingTimeNote %} · {{ experience.readingTimeNote }}{% endif %}</p>
+      <span class="tag">Source: {{ source }} · Data: {{ dataset.name }}</span>
+    </header>
+
+    <section aria-labelledby="bio-heading">
+      <h2 id="bio-heading">Neighborhood story</h2>
+      <div class="prose">
+        {% for para in experience.bio.split('\n\n') %}
+          {% if para.strip() %}
+          <p>{{ para.strip() }}</p>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+
+    <section aria-labelledby="anchors-heading">
+      {% if page_mode == 'freeform' %}
+      <h2 id="anchors-heading">Outside the sample list</h2>
+      <p class="muted">
+        <strong>{{ dataset.name }}</strong> is not in the hackathon&apos;s small NYC JSON bundle.
+        The story and layout below rely on the model&apos;s general knowledge of the place you named.
+      </p>
+      {% else %}
+      <h2 id="anchors-heading">Anchors from the dataset</h2>
+      <p class="muted"><strong>Vibe</strong> — {{ dataset.vibe }}</p>
+      <div class="grid grid-2" style="margin-top:1rem">
+        <div class="card">
+          <h2 style="margin-top:0;font-size:1rem">Landmarks</h2>
+          <ul class="insights">
+            {% for item in dataset.landmarks %}<li>{{ item }}</li>{% endfor %}
+          </ul>
+        </div>
+        <div class="card">
+          <h2 style="margin-top:0;font-size:1rem">Design hints</h2>
+          <ul class="insights">
+            {% for hint in dataset.designHints %}<li>{{ hint }}</li>{% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endif %}
+    </section>
+
+    <section aria-labelledby="layout-heading">
+      <h2 id="layout-heading">Generated layout</h2>
+      {% for block in experience.blocks %}
+        {% if block.type == "hero" %}
+        <div class="card" style="margin-top:1rem">
+          {% if block.kicker %}<div class="eyebrow">{{ block.kicker }}</div>{% endif %}
+          {% if block.title %}<h2 style="font-size:1.75rem;margin-top:0.35rem">{{ block.title }}</h2>{% endif %}
+          {% if block.subtitle %}<p class="muted">{{ block.subtitle }}</p>{% endif %}
+          {% if block.body %}<p>{{ block.body }}</p>{% endif %}
+        </div>
+        {% elif block.type == "intro_columns" %}
+        <div class="grid grid-2" style="margin-top:1rem">
+          <div class="card">{% if block.title %}<h2 style="margin-top:0;font-size:1.05rem">{{ block.title }}</h2>{% endif %}<p>{{ block.body }}</p></div>
+          <div class="card">{% if block.subtitle %}<h2 style="margin-top:0;font-size:1.05rem">{{ block.subtitle }}</h2>{% endif %}<p>{{ block.bodySecondary }}</p></div>
+        </div>
+        {% elif block.type == "bio_panel" %}
+        <div class="card" style="margin-top:1rem">
+          {% if block.title %}<h2 style="margin-top:0">{{ block.title }}</h2>{% endif %}
+          <div class="prose"><p>{{ block.body }}</p></div>
+        </div>
+        {% elif block.type == "fact_grid" %}
+        <div class="grid grid-2" style="margin-top:1rem">
+          {% for item in block['items'] %}
+          <div class="card"><strong>{{ item['label'] }}</strong><p class="muted" style="margin-top:0.35rem">{{ item['text'] }}</p></div>
+          {% endfor %}
+        </div>
+        {% elif block.type == "split_story" %}
+        <div class="grid grid-2" style="margin-top:1rem">
+          <div><h2 style="margin-top:0">{{ block.title }}</h2><p>{{ block.body }}</p></div>
+          <div><h2 style="margin-top:0">{{ block.subtitle }}</h2><p>{{ block.bodySecondary }}</p></div>
+        </div>
+        {% elif block.type == "pull_quote" %}
+        <blockquote class="card" style="margin-top:1rem">
+          <p class="quote">{{ block.body }}</p>
+          {% if block.kicker %}<footer class="muted">{{ block.kicker }}</footer>{% endif %}
+        </blockquote>
+        {% elif block.type == "timeline" %}
+        <div class="card" style="margin-top:1rem">
+          {% if block.title %}<h2 style="margin-top:0">{{ block.title }}</h2>{% endif %}
+          <dl class="timeline">
+            {% for item in block['items'] %}
+            <dt>{{ item['label'] }}</dt><dd>{{ item['text'] }}</dd>
+            {% endfor %}
+          </dl>
+        </div>
+        {% elif block.type == "insight_list" %}
+        <div class="card" style="margin-top:1rem">
+          {% if block.title %}<h2 style="margin-top:0">{{ block.title }}</h2>{% endif %}
+          <ul class="insights">{% for b in block.bullets %}<li>{{ b }}</li>{% endfor %}</ul>
+        </div>
+        {% elif block.type == "cta_band" %}
+        <div class="cta" style="margin-top:1rem">
+          {% if block.kicker %}<div class="eyebrow">{{ block.kicker }}</div>{% endif %}
+          {% if block.title %}<h2 style="margin-top:0.5rem">{{ block.title }}</h2>{% endif %}
+          <p>{{ block.body }}</p>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </section>
+
+    <footer>
+      Generated experience for <strong>{{ experience.neighborhoodName }}</strong>
+      ({{ page_mode }}).
+      Model blocks: {{ experience.blocks|length }} · Cache/LLM: <strong>{{ source }}</strong>.
+    </footer>
+  </div>
+</body>
+</html>
