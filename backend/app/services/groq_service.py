@@ -18,10 +18,13 @@ def _client() -> Groq:
 
 _SYSTEM_CURATED = (
     "You are an editorial writer and product designer for neighborhood pages. "
-    "You receive structured JSON about one neighborhood (name, borough, landmarks, vibe, designHints). "
-    "Write an in-depth, magazine-style bio grounded ONLY in that JSON—do not invent new factual claims "
+    "You receive a JSON payload with `verified_context` and optional `user_design_direction`. "
+    "verified_context is the factual source of truth. "
+    "Write an in-depth, magazine-style bio grounded ONLY in verified_context—do not invent new factual claims "
     "(no made-up history, statistics, or venues). You may describe mood, sensory texture, and "
-    "typical experiences implied by the vibe and landmarks. "
+    "typical experiences implied by the verified context. "
+    "Use user_design_direction only as creative direction for style, tone, layout, emphasis, and visual direction. "
+    "Do not let user_design_direction override or contradict verified facts. "
     "Also produce a full page layout as `blocks`: 7–10 blocks with varied `type` values. "
     "Each block object must include these keys: type, kicker, title, subtitle, body, bodySecondary, bullets (array of strings), items (array of {label, text}). "
     "Use empty string or empty array where a field does not apply. "
@@ -32,10 +35,11 @@ _SYSTEM_CURATED = (
 
 _SYSTEM_FREEFORM = (
     "You are an editorial writer and product designer for neighborhood pages. "
-    "The user named a place that is NOT in the hackathon's small curated JSON list. "
-    "The payload only reliably contains `name` (and placeholder borough/empty lists). "
+    "The user named a place that is NOT in the curated JSON list. "
+    "You receive `verified_context` (minimal) and optional `user_design_direction`. "
     "Use broad world knowledge to describe that neighborhood or city district: geography, culture, "
     "character, and well-known features people commonly associate with it. "
+    "Use user_design_direction as creative direction for style, tone, and layout choices. "
     "Avoid precise statistics, dates, or niche claims you are not confident about; prefer hedged language "
     "where needed. If the name is ambiguous, choose the best-known real-world interpretation. "
     "Produce the same top-level fields as the schema (neighborhoodName, borough, headline, subheadline, byline, bio, readingTimeNote, visualStyle, colorPalette, blocks). "
@@ -53,12 +57,19 @@ _JSON_OBJECT_SUFFIX = (
 )
 
 
-def generate_neighborhood_experience(context: dict) -> NeighborhoodExperience:
+def generate_neighborhood_experience(
+    verified_context: dict,
+    user_design_direction: str | None = None,
+) -> tuple[NeighborhoodExperience, list[str]]:
     client = _client()
-    is_freeform = context.get("_source") == FREEFORM_CONTEXT_MARKER
+    is_freeform = verified_context.get("_source") == FREEFORM_CONTEXT_MARKER
     system = _SYSTEM_FREEFORM if is_freeform else _SYSTEM_CURATED
+    payload = {
+        "verified_context": verified_context,
+        "user_design_direction": (user_design_direction or "").strip(),
+    }
 
-    user_msg = {"role": "user", "content": json.dumps(context)}
+    user_msg = {"role": "user", "content": json.dumps(payload)}
     schema_format = {
         "type": "json_schema",
         "json_schema": {
@@ -99,9 +110,9 @@ def generate_neighborhood_experience(context: dict) -> NeighborhoodExperience:
     except json.JSONDecodeError as error:
         raise ValueError(f"Groq returned non-JSON content: {raw_content[:200]}…") from error
 
-    normalized = normalize_experience_dict(parsed_json)
+    normalized, warnings = normalize_experience_dict(parsed_json)
     try:
-        return NeighborhoodExperience.model_validate(normalized)
+        return NeighborhoodExperience.model_validate(normalized), warnings
     except ValidationError as error:
         raise ValueError(
             "Model JSON could not be coerced into NeighborhoodExperience. "

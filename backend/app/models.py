@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class ThemeRequest(BaseModel):
     neighborhood: str
     strict_dataset_match: bool = False
+    user_context: str | None = None
 
 
 class ColorPalette(BaseModel):

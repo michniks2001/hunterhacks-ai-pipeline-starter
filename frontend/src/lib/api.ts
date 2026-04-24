@@ -62,7 +62,25 @@ export type ExperienceApiResponse = {
   matchedKey: string
   mode: 'dataset' | 'freeform' | string
   experience: NeighborhoodExperience
+  pipelineTrace: PipelineTrace
+  warnings: string[]
   pageUrl: string
+}
+
+export type PipelineTraceStep = {
+  label: string
+  description: string
+}
+
+export type PipelineTrace = {
+  userInput: string
+  matchedKey: string
+  mode: 'dataset' | 'freeform' | string
+  source: 'cache' | 'llm' | string
+  strictDatasetMatch: boolean
+  contextUsed: Record<string, unknown>
+  userDesignDirection: string
+  steps: PipelineTraceStep[]
 }
 
 function formatDetail(detail: unknown): string {
@@ -116,7 +134,7 @@ export async function fetchNeighborhoods(): Promise<NeighborhoodSummary[]> {
 
 export async function generateNeighborhoodExperience(
   neighborhood: string,
-  options?: { strictDatasetMatch?: boolean },
+  options?: { strictDatasetMatch?: boolean; userContext?: string },
 ): Promise<ExperienceApiResponse> {
   const res = await fetch(`${API_BASE}/api/theme`, {
     method: 'POST',
@@ -124,9 +142,17 @@ export async function generateNeighborhoodExperience(
     body: JSON.stringify({
       neighborhood,
       strict_dataset_match: options?.strictDatasetMatch ?? false,
+      user_context: options?.userContext ?? null,
     }),
   })
   return parseJsonResponse<ExperienceApiResponse>(res)
+}
+
+export async function clearCache(): Promise<{ message: string }> {
+  const res = await fetch(`${API_BASE}/api/debug/cache/clear`, {
+    method: 'POST',
+  })
+  return parseJsonResponse<{ message: string }>(res)
 }
 
 export function absoluteApiUrl(path: string): string {

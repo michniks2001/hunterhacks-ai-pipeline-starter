@@ -1,74 +1,95 @@
-# Neighborhood AI pipeline (starter)
+# HunterHacks AI Pipeline Starter
 
-This project is a small demo app: you type a **neighborhood name**, and you get back a **long write-up** plus a **styled page** (headings, sections, colors) that the app builds for you.
+A beginner-friendly workshop app that shows an AI pipeline in action.
 
----
+You type a neighborhood name in the frontend. The backend builds context, calls Groq, checks/normalizes the model JSON, and the frontend renders that JSON into a page.
 
-## What “AI pipeline” means here
+## How this works as an AI pipeline
 
-People say **pipeline** to mean: *a few clear steps in a row*, where each step hands something to the next—not a single black box.
+1. **User input**  
+   The user enters a neighborhood name (plus optional design direction).
 
-In this repo the chain is short:
+2. **Context lookup**  
+   The backend tries to match a curated NYC sample dataset first. If no match and strict mode is off, it uses a general-knowledge fallback context.
 
-1. **You** type a name and press generate.
-2. **The app** looks up extra facts when it can (a tiny built-in list of NYC neighborhoods). If the name is not on that list, it still continues and lets the AI work from the name alone (unless you turn on “only use the list”).
-3. **The AI** (through Groq) reads your name plus that extra text and writes back a big blob of structured content: a bio, headlines, color picks, and a list of “blocks” (hero, quote, list, etc.).
-4. **The server** cleans up that blob so the rest of the app can trust the shape.
-5. **The website** reads that blob and draws the page. Same content can also open as a simple HTML page from a link.
+3. **Model call**  
+   The backend sends both:
+   - verified context
+   - optional user design direction
 
-So: **input → context (when we have it) → model → tidy up → show.** That’s the whole pipeline in one breath.
+   The design direction can influence style and layout, but should not replace verified facts.
 
----
+4. **Validation + normalization**  
+   The backend parses model JSON, repairs common issues, and validates structure before the UI uses it.
 
-## What’s in the repo
+5. **Rendering**  
+   The frontend renders structured JSON into real UI components.
 
-- **`backend/`** — The server: receives the name, talks to the AI, caches results, can render HTML.
-- **`frontend/`** — The website you use in the browser.
+6. **Caching**  
+   Cached responses prevent unnecessary LLM calls and make repeat demos fast.
 
-You don’t need to understand every file to run it.
+## What to point out during the workshop
 
----
+- The model receives **context**, not just a raw one-line prompt.
+- The model returns **structured JSON**, not React code.
+- The backend **validates and normalizes** model output before rendering.
+- The frontend **renders JSON into UI** components.
+- Cache behavior is visible:
+  - first request: fresh from LLM
+  - second request: cache hit
+  - clear cache endpoint: fresh from LLM again
+- Optional design direction changes visual/story style without replacing verified data.
 
-## Run it
+## Project structure
 
-**1. Backend** (needs Python and [`uv`](https://docs.astral.sh/uv/), or use your own way to install deps from `backend/pyproject.toml`):
+- `backend/` FastAPI API + pipeline orchestration
+- `frontend/` Vite + React teaching UI
+
+## Quick start
+
+### 1) Backend
 
 ```bash
 cd backend
 uv sync
-```
-
-Create `backend/.env` with your Groq key:
-
-```bash
-GROQ_API_KEY=your_key_here
-```
-
-Start the server:
-
-```bash
+cp .env.example .env
 uv run uvicorn app.main:app --reload
 ```
 
-**2. Frontend** (needs Node):
+### 2) Frontend
 
 ```bash
 cd frontend
 npm install
+cp .env.example .env
 npm run dev
 ```
 
-Open the address the terminal prints (usually **http://localhost:5173**). Type a neighborhood (try a quick-fill chip first), generate, and read the page.
+Open the URL from Vite (usually `http://localhost:5173`).
 
----
+## Environment files
 
-## If something breaks
+### `backend/.env.example`
 
-- **“Could not generate” / API errors** — Check `GROQ_API_KEY` in `backend/.env` and that the backend terminal is still running.
-- **Browser says CORS** — Run the frontend on `http://localhost:5173`, or change `FRONTEND_URL` in `backend/app/config.py` to match where your UI runs.
+```bash
+GROQ_API_KEY=your_groq_api_key_here
+FRONTEND_URL=http://localhost:5173
+```
 
----
+### `frontend/.env.example`
 
-## License
+```bash
+VITE_API_BASE_URL=http://127.0.0.1:8000
+```
 
-Add your license or hackathon credit here if you need it.
+## Main API endpoints
+
+- `GET /api/neighborhoods`
+- `POST /api/theme`
+- `GET /api/neighborhoods/{key}/page`
+- `POST /api/debug/cache/clear`
+
+## Notes
+
+- This is a teaching artifact: the goal is to make pipeline steps visible.
+- Groq is called only from the backend (never from the frontend).

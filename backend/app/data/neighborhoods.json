@@ -16,6 +16,198 @@
       "warm sunset tones"
     ]
   },
+  "astoria": {
+    "name": "Astoria",
+    "borough": "Queens",
+    "landmarks": [
+      "Astoria Park",
+      "Ditmars Boulevard",
+      "Socrates Sculpture Park"
+    ],
+    "vibe": "neighborhood taverns, waterfront walks, family-owned spots, lively but relaxed",
+    "designHints": [
+      "Mediterranean cafe energy",
+      "sunset river tones",
+      "mix of old signage and modern type",
+      "warm neighborhood texture"
+    ]
+  },
+  "jackson heights": {
+    "name": "Jackson Heights",
+    "borough": "Queens",
+    "landmarks": [
+      "Diversity Plaza",
+      "74th Street",
+      "Roosevelt Avenue"
+    ],
+    "vibe": "busy sidewalks, multilingual food scene, colorful markets, high energy",
+    "designHints": [
+      "festival color palette",
+      "market sign layers",
+      "dense street grid motifs",
+      "bold iconography"
+    ]
+  },
+  "harlem": {
+    "name": "Harlem",
+    "borough": "Manhattan",
+    "landmarks": [
+      "Apollo Theater",
+      "125th Street",
+      "Marcus Garvey Park"
+    ],
+    "vibe": "historic, soulful, artistic, proud, community-centered",
+    "designHints": [
+      "jazz club mood",
+      "classic serif headlines",
+      "deep jewel tones",
+      "archival poster texture"
+    ]
+  },
+  "lower east side": {
+    "name": "Lower East Side",
+    "borough": "Manhattan",
+    "landmarks": [
+      "Essex Market",
+      "Tenement Museum area",
+      "Orchard Street"
+    ],
+    "vibe": "gritty history meets nightlife, indie shops, layered street culture",
+    "designHints": [
+      "zine-style layouts",
+      "collage elements",
+      "neon accents on muted base",
+      "tight typography"
+    ]
+  },
+  "chinatown": {
+    "name": "Chinatown",
+    "borough": "Manhattan",
+    "landmarks": [
+      "Canal Street",
+      "Mott Street",
+      "Columbus Park"
+    ],
+    "vibe": "crowded, fast-moving, food-focused, tradition beside constant motion",
+    "designHints": [
+      "lantern-inspired warm highlights",
+      "vertical signage motifs",
+      "high-contrast wayfinding",
+      "dense texture backgrounds"
+    ]
+  },
+  "dumbo": {
+    "name": "DUMBO",
+    "borough": "Brooklyn",
+    "landmarks": [
+      "Brooklyn Bridge Park",
+      "Washington Street bridge view",
+      "Empire Stores"
+    ],
+    "vibe": "industrial waterfront, creative offices, polished and photogenic",
+    "designHints": [
+      "steel and brick palette",
+      "large photography blocks",
+      "minimal type with big spacing",
+      "river light gradients"
+    ]
+  },
+  "park slope": {
+    "name": "Park Slope",
+    "borough": "Brooklyn",
+    "landmarks": [
+      "Prospect Park edge",
+      "Fifth Avenue",
+      "brownstone blocks"
+    ],
+    "vibe": "tree-lined, residential, bookshops and cafes, calm weekend rhythm",
+    "designHints": [
+      "earthy natural tones",
+      "soft editorial cards",
+      "classic neighborhood map feel",
+      "friendly typography"
+    ]
+  },
+  "sunset park": {
+    "name": "Sunset Park",
+    "borough": "Brooklyn",
+    "landmarks": [
+      "Sunset Park hilltop view",
+      "Industry City",
+      "Eighth Avenue corridor"
+    ],
+    "vibe": "working neighborhood, multilingual, waterfront industry and family streets",
+    "designHints": [
+      "sunset gradient overlays",
+      "warehouse geometry",
+      "street-market visuals",
+      "high readability labels"
+    ]
+  },
+  "bushwick": {
+    "name": "Bushwick",
+    "borough": "Brooklyn",
+    "landmarks": [
+      "Bushwick Collective murals",
+      "Maria Hernandez Park",
+      "Jefferson Street corridor"
+    ],
+    "vibe": "street art, nightlife, warehouse venues, experimental and energetic",
+    "designHints": [
+      "spray-paint textures",
+      "bold display type",
+      "dark base with bright accents",
+      "modular card stacks"
+    ]
+  },
+  "forest hills": {
+    "name": "Forest Hills",
+    "borough": "Queens",
+    "landmarks": [
+      "Austin Street",
+      "Forest Hills Stadium",
+      "Forest Park edge"
+    ],
+    "vibe": "leafy and suburban-feeling, polished shopping streets, concert crowds at night",
+    "designHints": [
+      "green and stone palette",
+      "clean storefront rhythm",
+      "elegant sans-serif type",
+      "balanced white space"
+    ]
+  },
+  "sheepshead bay": {
+    "name": "Sheepshead Bay",
+    "borough": "Brooklyn",
+    "landmarks": [
+      "Emmons Avenue",
+      "marina and piers",
+      "canal-side seafood spots"
+    ],
+    "vibe": "waterfront, maritime, local diners, breezy and unhurried",
+    "designHints": [
+      "nautical blues",
+      "harbor map motifs",
+      "boardwalk-inspired dividers",
+      "calm content flow"
+    ]
+  },
+  "sea gate": {
+    "name": "Sea Gate",
+    "borough": "Brooklyn",
+    "landmarks": [
+      "private beachfront edge",
+      "gated residential streets",
+      "Atlantic shoreline views"
+    ],
+    "vibe": "quiet coastal pocket, residential, tucked-away beach atmosphere",
+    "designHints": [
+      "minimal coastal palette",
+      "wind and water gradients",
+      "simple geometric cards",
+      "soft, airy spacing"
+    ]
+  },
   "flushing": {
     "name": "Flushing",
     "borough": "Queens",
