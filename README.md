@@ -89,6 +89,28 @@ VITE_API_BASE_URL=http://127.0.0.1:8000
 - `GET /api/neighborhoods/{key}/page`
 - `POST /api/debug/cache/clear`
 
+## To Run in GitHub Codespaces
+
+1. Click **Code → Codespaces → Create codespace on main**.
+
+   Or open:
+
+   https://codespaces.new/michniks2001/hunterhacks-ai-pipeline-starter?quickstart=1
+
+2. Wait for setup to finish.
+
+3. Add your Groq key as a Codespaces secret named `GROQ_API_KEY`.
+
+4. In VS Code, open the Command Palette:
+
+   `Tasks: Run Task → Run full app`
+
+5. Open the forwarded **Vite Frontend** port.
+
+The backend runs on port `8000`.
+The frontend runs on port `5173`.
+The frontend calls the backend through Vite’s `/api` proxy.
+
 ## Notes
 
 - This is a teaching artifact: the goal is to make pipeline steps visible.
