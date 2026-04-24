@@ -1,0 +1,36 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Backend: FastAPI",
+      "type": "shell",
+      "command": "cd backend && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "group": "dev",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Frontend: Vite",
+      "type": "shell",
+      "command": "cd frontend && npm run dev -- --host 0.0.0.0",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "group": "dev",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Run full app",
+      "dependsOrder": "parallel",
+      "dependsOn": [
+        "Backend: FastAPI",
+        "Frontend: Vite"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

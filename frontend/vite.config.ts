@@ -7,7 +7,6 @@ import { defineConfig } from 'vite'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     tailwindcss(),
@@ -17,6 +16,16 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(dirname, './src'),
+    },
+  },
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+      },
     },
   },
 })
