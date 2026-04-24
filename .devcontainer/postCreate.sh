@@ -4,12 +4,14 @@ set -euo pipefail
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
-echo "Initializing backend environment..."
+echo "Initializing Codespaces/dev environment..."
 
 mkdir -p backend
 mkdir -p frontend
 
-# Create backend .env from example if it does not exist.
+# -----------------------------
+# 1. Create backend/.env
+# -----------------------------
 if [ ! -f backend/.env ]; then
   if [ -f backend/.env.example ]; then
     cp backend/.env.example backend/.env
@@ -21,7 +23,9 @@ EOF
   fi
 fi
 
-# Create frontend .env from example if it does not exist.
+# -----------------------------
+# 2. Create frontend/.env
+# -----------------------------
 if [ ! -f frontend/.env ]; then
   if [ -f frontend/.env.example ]; then
     cp frontend/.env.example frontend/.env
@@ -32,7 +36,9 @@ EOF
   fi
 fi
 
-# Build Codespaces URLs if running inside GitHub Codespaces.
+# -----------------------------
+# 3. Detect Codespaces URLs
+# -----------------------------
 if [ -n "${CODESPACE_NAME:-}" ]; then
   DOMAIN="${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN:-app.github.dev}"
 
@@ -42,14 +48,19 @@ if [ -n "${CODESPACE_NAME:-}" ]; then
   echo "Detected GitHub Codespaces."
   echo "Frontend URL: ${FRONTEND_URL}"
   echo "Backend URL:  ${BACKEND_URL}"
+else
+  FRONTEND_URL="http://localhost:5173"
+  BACKEND_URL="http://127.0.0.1:8000"
 
-  # Write frontend API URL.
-  cat > frontend/.env <<EOF
-VITE_API_BASE_URL=${BACKEND_URL}
-EOF
+  echo "Not running inside Codespaces."
+  echo "Frontend URL: ${FRONTEND_URL}"
+  echo "Backend URL:  ${BACKEND_URL}"
+fi
 
-  # Update backend .env safely.
-  python - <<PY
+# -----------------------------
+# 4. Update backend/.env safely
+# -----------------------------
+python - <<PY
 from pathlib import Path
 import os
 
@@ -61,7 +72,10 @@ values = {
 }
 
 # If the student added GROQ_API_KEY as a Codespaces secret,
-# inject it automatically.
+# copy it into backend/.env automatically.
+#
+# If no Codespaces secret exists, preserve whatever is already
+# inside backend/.env so manual edits are not wiped out.
 if os.environ.get("GROQ_API_KEY"):
     values["GROQ_API_KEY"] = os.environ["GROQ_API_KEY"]
 
@@ -90,10 +104,21 @@ for key, value in values.items():
 env_path.write_text("\\n".join(out) + "\\n")
 PY
 
-else
-  echo "Not running inside Codespaces. Keeping local URLs."
-fi
+# -----------------------------
+# 5. Update frontend/.env
+# -----------------------------
+# Keep this blank by default.
+#
+# The frontend should call /api/... and Vite should proxy that
+# to FastAPI internally. This avoids Codespaces CORS and private-port
+# redirect problems.
+cat > frontend/.env <<EOF
+VITE_API_BASE_URL=
+EOF
 
+# -----------------------------
+# 6. Print safe debug output
+# -----------------------------
 echo
 echo "backend/.env:"
 sed 's/GROQ_API_KEY=.*/GROQ_API_KEY=***hidden***/' backend/.env
@@ -103,4 +128,22 @@ echo "frontend/.env:"
 cat frontend/.env
 
 echo
-echo "Backend environment initialized."
+python - <<'PY'
+from pathlib import Path
+
+env_path = Path("backend/.env")
+values = {}
+
+for line in env_path.read_text().splitlines():
+    if "=" in line and not line.strip().startswith("#"):
+        key, value = line.split("=", 1)
+        values[key] = value
+
+print("Environment check:")
+print(f"  GROQ_API_KEY present: {bool(values.get('GROQ_API_KEY'))}")
+print(f"  FRONTEND_URL: {values.get('FRONTEND_URL', '')}")
+PY
+
+echo
+echo "Environment initialized."
+echo "Reminder: restart Vite/FastAPI if .env values changed."
