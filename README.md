@@ -267,3 +267,7 @@ Then restart the full app task.
 - The model generates structured JSON, not React code.
 - The frontend renders that structured JSON into UI.
 - The cache is intentionally visible so you can see when the app uses a fresh LLM response versus a cached response.
+
+## License
+
+This project is licensed under the MIT License
