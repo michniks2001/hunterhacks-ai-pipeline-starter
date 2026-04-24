@@ -4,52 +4,66 @@ set -euo pipefail
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
-echo "Installing backend dependencies..."
-cd backend
-uv sync
-
-if [ ! -f ".env" ]; then
-  cp .env.example .env
+# Create backend .env
+if [ ! -f backend/.env ]; then
+  cp backend/.env.example backend/.env
 fi
 
-# If the student added GROQ_API_KEY as a Codespaces secret,
-# copy it into backend/.env automatically.
-if [ -n "${GROQ_API_KEY:-}" ]; then
-  python - <<'PY'
+# Create frontend .env
+if [ ! -f frontend/.env ]; then
+  cp frontend/.env.example frontend/.env
+fi
+
+# If running inside GitHub Codespaces, generate the forwarded URLs.
+if [ -n "${CODESPACE_NAME:-}" ]; then
+  DOMAIN="${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN:-app.github.dev}"
+
+  FRONTEND_URL="https://${CODESPACE_NAME}-5173.${DOMAIN}"
+  BACKEND_URL="https://${CODESPACE_NAME}-8000.${DOMAIN}"
+
+  cat > frontend/.env <<EOF
+VITE_API_BASE_URL=${BACKEND_URL}
+EOF
+
+  python - <<PY
 from pathlib import Path
 import os
 
-env_path = Path(".env")
-lines = env_path.read_text().splitlines() if env_path.exists() else []
+env_path = Path("backend/.env")
+existing = env_path.read_text().splitlines() if env_path.exists() else []
 
-def set_key(lines, key, value):
-    found = False
-    out = []
-    for line in lines:
-        if line.startswith(f"{key}="):
-            out.append(f"{key}={value}")
-            found = True
-        else:
-            out.append(line)
-    if not found:
+values = {
+    "FRONTEND_URL": "${FRONTEND_URL}",
+}
+
+if os.environ.get("GROQ_API_KEY"):
+    values["GROQ_API_KEY"] = os.environ["GROQ_API_KEY"]
+
+seen = set()
+out = []
+
+for line in existing:
+    if "=" not in line or line.strip().startswith("#"):
+        out.append(line)
+        continue
+
+    key = line.split("=", 1)[0]
+
+    if key in values:
+        out.append(f"{key}={values[key]}")
+        seen.add(key)
+    else:
+        out.append(line)
+
+for key, value in values.items():
+    if key not in seen:
         out.append(f"{key}={value}")
-    return out
 
-lines = set_key(lines, "GROQ_API_KEY", os.environ["GROQ_API_KEY"])
-lines = set_key(lines, "FRONTEND_URL", "http://localhost:5173")
-env_path.write_text("\n".join(lines) + "\n")
+env_path.write_text("\\n".join(out) + "\\n")
 PY
+
+  echo "Codespaces frontend URL: ${FRONTEND_URL}"
+  echo "Codespaces backend URL:  ${BACKEND_URL}"
+else
+  echo "Not running inside Codespaces. Keeping local .env files."
 fi
-
-cd "$REPO_ROOT"
-
-echo "Installing frontend dependencies..."
-cd frontend
-npm install
-
-if [ ! -f ".env" ]; then
-  cp .env.example .env
-fi
-
-echo "Codespace setup complete."
-echo "Run the VS Code task: Run full app"
